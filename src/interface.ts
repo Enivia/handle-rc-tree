@@ -1,3 +1,6 @@
 import { TreeProps as RcTreeProps } from 'rc-tree';
 
-export interface TreeProps extends RcTreeProps {}
+// @ts-ignore
+export interface TreeProps extends RcTreeProps {
+  prefixCls?: string;
+}

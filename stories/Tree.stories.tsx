@@ -1,6 +1,7 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import Tree from '../src';
+import BasicDemo from '../demos/basic';
 
 const meta: Meta = {
   title: 'Tree',
@@ -19,10 +20,4 @@ const meta: Meta = {
 
 export default meta;
 
-const Template: Story<any> = args => <Tree {...args} />;
-
-// By passing using the Args format for exported stories, you can control the props for a component for reuse in a test
-// https://storybook.js.org/docs/react/workflows/unit-testing
-export const Basic = Template.bind({});
-
-Basic.args = {};
+export const Basic: Story = () => <BasicDemo />;

@@ -1,23 +1,10 @@
-import React from 'react';
+import React, { FC } from 'react';
+import { TreeProps } from './interface';
 import RcTree from 'rc-tree';
-import 'rc-tree/assets/index.css'
+import 'rc-tree/assets/index.css';
 
-const treeData = [
-  {
-    key: '0-0',
-    title: 'parent 1',
-    children: [
-      {
-        key: '0-0-0',
-        title: 'parent 1-1',
-        children: [{ key: '0-0-0-0', title: 'parent 1-1-0' }],
-      },
-    ],
-  },
-];
-
-const Tree = () => {
-  return <RcTree treeData={treeData} />;
+const Tree: FC<TreeProps> = props => {
+  return <RcTree {...props} />;
 };
 
 export default Tree;

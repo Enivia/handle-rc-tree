@@ -1,1 +1,1 @@
-# rc-hook-tree
+# easy-rc-tree

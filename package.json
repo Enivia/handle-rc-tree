@@ -35,16 +35,16 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "use-ant-tree",
+  "name": "easy-rc-tree",
   "author": "Enivia",
-  "module": "dist/use-ant-tree.esm.js",
+  "module": "dist/easy-rc-tree.esm.js",
   "size-limit": [
     {
-      "path": "dist/use-ant-tree.cjs.production.min.js",
+      "path": "dist/easy-rc-tree.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/use-ant-tree.esm.js",
+      "path": "dist/easy-rc-tree.esm.js",
       "limit": "10 KB"
     }
   ],

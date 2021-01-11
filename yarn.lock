@@ -7144,11 +7144,6 @@ immer@1.10.0:
   resolved "https://registry.npm.taobao.org/immer/download/immer-1.10.0.tgz?cache=0&sync_timestamp=1605654204833&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fimmer%2Fdownload%2Fimmer-1.10.0.tgz#bad67605ba9c810275d91e1c2a47d4582e98286d"
   integrity sha1-utZ2BbqcgQJ12R4cKkfUWC6YKG0=
 
-immer@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.npm.taobao.org/immer/download/immer-8.0.0.tgz?cache=0&sync_timestamp=1605654204833&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fimmer%2Fdownload%2Fimmer-8.0.0.tgz#08763549ba9dd7d5e2eb4bec504a8315bd9440c2"
-  integrity sha1-CHY1Sbqd19Xi60vsUEqDFb2UQMI=
-
 import-cwd@^2.0.0:
   version "2.1.0"
   resolved "https://registry.npm.taobao.org/import-cwd/download/import-cwd-2.1.0.tgz#aa6cf36e722761285cb371ec6519f53e2435b0a9"
@@ -13092,6 +13087,11 @@ use-composed-ref@^1.0.0:
   integrity sha1-kiDk6UqXt7AtfSfq6rCzcDRDi7w=
   dependencies:
     ts-essentials "^2.0.3"
+
+use-immer@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.npm.taobao.org/use-immer/download/use-immer-0.4.2.tgz#7d7e7d3386cc834d45b2279f37d8974023550f4f"
+  integrity sha1-fX59M4bMg01FsiefN9iXQCNVD08=
 
 use-isomorphic-layout-effect@^1.0.0:
   version "1.1.1"

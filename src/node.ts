@@ -25,6 +25,16 @@ export default class Node {
     return depth;
   }
 
+  update(node: Node) {
+    for (let f in node) {
+      if (f === 'parent' || f === 'children') {
+        continue;
+      }
+      // @ts-ignore
+      this[f] = node[f];
+    }
+  }
+
   addChild(child: Node) {
     if (child.parent === this) {
       return;

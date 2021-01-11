@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Tree from '../src';
 
 const treeData = [
@@ -16,7 +16,13 @@ const treeData = [
 ];
 
 const Basic = () => {
-  return <Tree treeData={treeData} />;
+  const treeRef = Tree.useTree();
+
+  useEffect(() => {
+    treeRef.current.data(treeData);
+  }, []);
+
+  return <Tree ref={treeRef} />;
 };
 
 export default Basic;

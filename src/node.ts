@@ -1,5 +1,5 @@
 export default class Node {
-  key: number | string = '';
+  key: string = '';
   title: string = '';
   isLeaf?: boolean;
   data?: any;

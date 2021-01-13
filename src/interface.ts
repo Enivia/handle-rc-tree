@@ -7,11 +7,9 @@ import {
 import useTree from './hooks/use-tree';
 import Node from './node';
 
-export const ROOT = 'EASY_RC_TREE_ROOT';
-
 export type NodeDataKey = 'key' | 'title' | 'children';
 
-export type DataKeyMap = { [key in NodeDataKey]: string };
+export type DataKeyMap = { [key in NodeDataKey]?: string };
 
 export type NodeCallback = (n: Node) => boolean;
 

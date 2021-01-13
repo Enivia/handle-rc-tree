@@ -1,14 +1,7 @@
-import { DataKeyMap, ROOT } from './interface';
+import { DataKeyMap } from './interface';
 import Node from './node';
 
 const Utils = {
-  createRoot() {
-    const root = new Node();
-    root.key = ROOT;
-    root.isRoot = true;
-    return root;
-  },
-
   from(data: object[], dataKeyMap: DataKeyMap, parent?: Node): Node[] {
     return (data || []).map(item => Utils.format(item, dataKeyMap, parent));
   },

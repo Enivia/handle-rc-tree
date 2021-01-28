@@ -12,14 +12,14 @@ import produce from 'immer';
 import RcTree from 'rc-tree';
 import 'rc-tree/assets/index.css';
 
-import { NodeCallback, TreeInstance, TreeProps } from './interface';
-import Node from './node';
+import { Node, NodeCallback, TreeInstance, TreeProps } from './interface';
 import Utils from './utils';
 import useTree from './hooks/use-tree';
 
-const ROOT = 'EASY_RC_TREE_ROOT';
+const ROOT = 'HANDLE_RC_TREE_ROOT';
 const DEFAULT_KEY_MAP = { key: 'key', title: 'title', children: 'children' };
 
+const defaultRoot: Node = { key: 'ROOT_KEY', data: null };
 export interface ITree
   extends ForwardRefExoticComponent<
     PropsWithoutRef<TreeProps> & RefAttributes<TreeInstance>
@@ -30,26 +30,22 @@ export interface ITree
 
 const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
   const { dataKeyMap: keymap, ...rest } = props;
-  const [root, setRoot] = useState<Node>();
+  const [root, setRoot] = useState<Node>(defaultRoot);
 
   const dataKeyMap = useMemo(() => {
     return { ...DEFAULT_KEY_MAP, ...keymap };
   }, [keymap]);
 
-  const createRoot = useCallback(() => {
-    const root = new Node();
-    root.key = ROOT;
-    root.isRoot = true;
-    return root;
-  }, []);
-
   const $update = useCallback((callback: (draft: Node) => void) => {
-    try {
-      setRoot(produce(draft => callback(draft)));
-      // setRoot(draft => callback(draft));
-    } catch (e) {
-      console.error(e);
-    }
+    setRoot(
+      produce(draft => {
+        try {
+          callback(draft);
+        } catch (e) {
+          console.error(e);
+        }
+      })
+    );
   }, []);
 
   const findNode = useCallback((root: Node, callback: NodeCallback) => {
@@ -58,18 +54,16 @@ const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
     }
     const node = Utils.find(root, callback);
     if (!node) {
-      throw Error('cannot find node');
+      throw Error('node is not found');
     }
     return node;
   }, []);
 
   const data = useCallback(
     (data: object[]) => {
-      $update(() => {
-        const rootNode = createRoot();
+      $update(node => {
         const children = Utils.from(data, dataKeyMap);
-        children.forEach(child => rootNode.addChild(child));
-        return rootNode;
+        node.children = children;
       });
     },
     [dataKeyMap]
@@ -80,8 +74,8 @@ const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
       $update(draft => {
         if (!node) return;
         const parent = findNode(draft, callback);
-        const treeNode = Utils.format(node, dataKeyMap);
-        parent.addChild(treeNode);
+        const child = Utils.format(node, dataKeyMap);
+        Utils.addChild(parent, child);
       });
     },
     [dataKeyMap]
@@ -89,8 +83,11 @@ const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
 
   const remove = useCallback((callback: NodeCallback) => {
     $update(draft => {
-      const node = findNode(draft, callback);
-      node.parent?.removeChild(node);
+      const parent = findNode(draft, parent =>
+        (parent.children || []).some(callback)
+      );
+      const child = findNode(draft, callback);
+      Utils.removeChild(parent, child);
     });
   }, []);
 
@@ -99,7 +96,7 @@ const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
       $update(draft => {
         const old = findNode(draft, callback);
         const nNode = Utils.format(node, dataKeyMap);
-        old.update(nNode);
+        Utils.updateNode(old, nNode);
       });
     },
     [dataKeyMap]
@@ -108,17 +105,19 @@ const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
   const move = useCallback(
     (nodeCallback: NodeCallback, parentCallback: NodeCallback) => {
       $update(draft => {
-        const node = findNode(draft, nodeCallback);
-        if (node.isRoot) {
-          throw Error('tree root cannot be moved');
+        const child = findNode(draft, nodeCallback);
+        const oldParent = findNode(draft, parent =>
+          (parent.children || []).some(nodeCallback)
+        );
+        const newParent = findNode(draft, parentCallback);
+        if (oldParent === newParent) {
+          throw Error('move faild: same parent');
         }
-        const parent = findNode(draft, parentCallback);
-        if (node === parent) {
-          throw Error('cannot move node to itself');
+        if (child === newParent) {
+          throw Error('move faild: cannot move node to itself');
         }
-
-        node.parent?.removeChild(node);
-        parent.addChild(node);
+        Utils.removeChild(oldParent, child);
+        Utils.addChild(newParent, child);
       });
     },
     []

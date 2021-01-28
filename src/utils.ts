@@ -1,26 +1,22 @@
-import { DataKeyMap } from './interface';
-import Node from './node';
+import { Node, DataKeyMap } from './interface';
 
 const Utils = {
-  from(data: object[], dataKeyMap: DataKeyMap, parent?: Node): Node[] {
-    return (data || []).map(item => Utils.format(item, dataKeyMap, parent));
+  from(data: any[], dataKeyMap: DataKeyMap): Node[] {
+    return (data || []).map(item => Utils.format(item, dataKeyMap));
   },
-
-  format(item: object, dataKeyMap: DataKeyMap, parent?: Node): Node {
-    const node = new Node();
-    node.key = (item as any)[dataKeyMap.key || 'key'] + '';
-    node.title = (item as any)[dataKeyMap.title || 'title'];
-    node.isLeaf = (item as any)['isLeaf'];
-    node.data = item;
-    node.parent = parent;
+  format(item: any, dataKeyMap: DataKeyMap): Node {
+    const node: Node = {
+      key: item[dataKeyMap.key || 'key'] + '',
+      title: item[dataKeyMap.title || 'title'],
+      isLeaf: item['isLeaf'],
+      data: item,
+    };
     node.children = Utils.from(
-      (item as any)[dataKeyMap.children || 'children'],
-      dataKeyMap,
-      node
+      item[dataKeyMap.children || 'children'],
+      dataKeyMap
     );
     return node;
   },
-
   forEach(root: Node, callback: (node: Node) => void) {
     if (!root) return;
     let open = [root];
@@ -32,8 +28,6 @@ const Utils = {
       }
     }
   },
-
-  // @ts-ignore
   find(root: Node, callback: (node: Node) => boolean) {
     if (!root) return;
     let open = [root];
@@ -46,6 +40,19 @@ const Utils = {
         open = node.children.concat(open);
       }
     }
+    return;
+  },
+  addChild(parent: Node, child: Node) {
+    if (!parent.children) {
+      parent.children = [];
+    }
+    parent.children.push(child);
+  },
+  removeChild(parent: Node, child: Node) {
+    parent.children = parent.children?.filter(item => item !== child);
+  },
+  updateNode(node: Node, newNode: Node) {
+    node = { ...node, ...newNode, children: node.children };
   },
 };
 

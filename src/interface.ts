@@ -1,15 +1,20 @@
 import { TreeProps as RcTreeProps } from 'rc-tree';
+import { DataNode } from 'rc-tree/lib/interface';
 import {
   ForwardRefExoticComponent,
   PropsWithoutRef,
   RefAttributes,
 } from 'react';
 import useTree from './hooks/use-tree';
-import Node from './node';
 
 export type NodeDataKey = 'key' | 'title' | 'children';
 
 export type DataKeyMap = { [key in NodeDataKey]?: string };
+
+export interface Node extends DataNode {
+  data: any;
+  children?: Node[];
+}
 
 export type NodeCallback = (n: Node) => boolean;
 

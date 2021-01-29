@@ -1,8 +1,6 @@
 import React, {
   forwardRef,
-  ForwardRefExoticComponent,
-  PropsWithoutRef,
-  RefAttributes,
+  ForwardedRef,
   useCallback,
   useImperativeHandle,
   useMemo,
@@ -14,23 +12,14 @@ import 'rc-tree/assets/index.css';
 
 import { Node, NodeCallback, TreeInstance, TreeProps } from './interface';
 import Utils from './utils';
-import useTree from './hooks/use-tree';
 
-const ROOT = 'HANDLE_RC_TREE_ROOT';
+export const ROOT = 'HANDLE_RC_TREE_ROOT';
 const DEFAULT_KEY_MAP = { key: 'key', title: 'title', children: 'children' };
+const DEFAULT_ROOT: Node = { key: 'ROOT_KEY', data: {} };
 
-const defaultRoot: Node = { key: 'ROOT_KEY', data: null };
-export interface ITree
-  extends ForwardRefExoticComponent<
-    PropsWithoutRef<TreeProps> & RefAttributes<TreeInstance>
-  > {
-  useTree: typeof useTree;
-  ROOT: typeof ROOT;
-}
-
-const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
+const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstance>) => {
   const { dataKeyMap: keymap, ...rest } = props;
-  const [root, setRoot] = useState<Node>(defaultRoot);
+  const [root, setRoot] = useState<Node>(DEFAULT_ROOT);
 
   const dataKeyMap = useMemo(() => {
     return { ...DEFAULT_KEY_MAP, ...keymap };
@@ -60,7 +49,7 @@ const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
   }, []);
 
   const data = useCallback(
-    (data: object[]) => {
+    (data: any[]) => {
       $update(node => {
         const children = Utils.from(data, dataKeyMap);
         node.children = children;
@@ -70,7 +59,7 @@ const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
   );
 
   const insert = useCallback(
-    (node: object, callback: NodeCallback) => {
+    (node: any, callback: NodeCallback) => {
       $update(draft => {
         if (!node) return;
         const parent = findNode(draft, callback);
@@ -83,16 +72,14 @@ const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
 
   const remove = useCallback((callback: NodeCallback) => {
     $update(draft => {
-      const parent = findNode(draft, parent =>
-        (parent.children || []).some(callback)
-      );
+      const parent = findNode(draft, parent => (parent.children || []).some(callback));
       const child = findNode(draft, callback);
       Utils.removeChild(parent, child);
     });
   }, []);
 
   const update = useCallback(
-    (node: object, callback: NodeCallback) => {
+    (node: any, callback: NodeCallback) => {
       $update(draft => {
         const old = findNode(draft, callback);
         const nNode = Utils.format(node, dataKeyMap);
@@ -132,9 +119,6 @@ const Tree: ITree = forwardRef<TreeInstance, TreeProps>((props, ref) => {
   }));
 
   return <RcTree {...rest} treeData={root?.children} />;
-}) as ITree;
+});
 
-Tree.useTree = useTree;
-Tree.ROOT = ROOT;
-
-export default Tree;
+export default InternalTree;

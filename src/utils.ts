@@ -11,10 +11,7 @@ const Utils = {
       isLeaf: item['isLeaf'],
       data: item,
     };
-    node.children = Utils.from(
-      item[dataKeyMap.children || 'children'],
-      dataKeyMap
-    );
+    node.children = Utils.from(item[dataKeyMap.children || 'children'], dataKeyMap);
     return node;
   },
   forEach(root: Node, callback: (node: Node) => void) {
@@ -52,7 +49,9 @@ const Utils = {
     parent.children = parent.children?.filter(item => item !== child);
   },
   updateNode(node: Node, newNode: Node) {
-    node = { ...node, ...newNode, children: node.children };
+    for (let prop in newNode) {
+      node[prop as keyof Node] = newNode[prop as keyof Node];
+    }
   },
 };
 

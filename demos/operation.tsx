@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Tree from '../src';
 
-const treeData = [
+type CustomData = { id: string; name: string; children?: CustomData[] };
+const treeData: CustomData[] = [
   {
     id: '1',
     name: 'node 1',
@@ -21,7 +22,7 @@ const treeData = [
 ];
 
 const Operation = () => {
-  const treeRef = Tree.useTree();
+  const treeRef = Tree.useTree<CustomData>();
 
   const [target, setTarget] = useState<string>();
   const [parent, setParent] = useState<string>();
@@ -30,15 +31,38 @@ const Operation = () => {
     treeRef.current.data(treeData);
   }, []);
 
+  const getNodeData = () => {
+    const id = Math.random()
+      .toString()
+      .slice(-9);
+    const data = { id, name: `node-${id}` };
+    return data;
+  };
+
+  const insert = () => {
+    const data = getNodeData();
+    treeRef.current.insert(data, n => n.data.id === parent);
+    setParent('');
+  };
+
   const remove = () => {
-    treeRef.current.remove(node => node.key === target);
+    treeRef.current.remove(n => n.data.id === target);
+    setTarget('');
+  };
+
+  const update = () => {
+    const data = getNodeData();
+    treeRef.current.update(data, n => n.data.id === target);
+    setTarget('');
   };
 
   const move = () => {
     treeRef.current.move(
-      node => node.key === target,
-      node => node.key === parent
+      n => n.data.id === target,
+      n => n.data.id === parent
     );
+    setTarget('');
+    setParent('');
   };
 
   return (
@@ -46,18 +70,33 @@ const Operation = () => {
       <div>
         <input
           placeholder="node id"
+          value={target}
+          onChange={e => setTarget(e.target.value)}
+        />
+        <button onClick={remove}>remove</button>
+        <button onClick={update}>update</button>
+      </div>
+      <div>
+        <input
+          placeholder="parent id"
+          value={parent}
+          onChange={e => setParent(e.target.value)}
+        />
+        <button onClick={insert}>insert</button>
+      </div>
+      <div>
+        <input
+          placeholder="node id"
+          value={target}
           onChange={e => setTarget(e.target.value)}
         />
         <input
           placeholder="parent id"
+          value={parent}
           onChange={e => setParent(e.target.value)}
         />
+        <button onClick={move}>move</button>
       </div>
-      <button>insert</button>
-      <button onClick={remove}>remove</button>
-      <button>update</button>
-      <button onClick={move}>move</button>
-
       <Tree ref={treeRef} dataKeyMap={{ key: 'id', title: 'name' }} />
     </div>
   );

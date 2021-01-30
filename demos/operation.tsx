@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Tree from '../src';
 
 type CustomData = { id: string; name: string; children?: CustomData[] };
@@ -27,9 +27,9 @@ const Operation = () => {
   const [target, setTarget] = useState<string>();
   const [parent, setParent] = useState<string>();
 
-  useEffect(() => {
+  const setData = () => {
     treeRef.current.data(treeData);
-  }, []);
+  };
 
   const getNodeData = () => {
     const id = Math.random()
@@ -67,6 +67,7 @@ const Operation = () => {
 
   return (
     <div>
+      <button onClick={setData}>reset tree data</button>
       <div>
         <input
           placeholder="node id"
@@ -97,7 +98,11 @@ const Operation = () => {
         />
         <button onClick={move}>move</button>
       </div>
-      <Tree ref={treeRef} dataKeyMap={{ key: 'id', title: 'name' }} />
+      <Tree
+        ref={treeRef}
+        dataKeyMap={{ key: 'id', title: 'name' }}
+        treeData={treeData}
+      />
     </div>
   );
 };

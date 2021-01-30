@@ -22,7 +22,15 @@ const Basic = () => {
     treeRef.current.data(treeData);
   }, []);
 
-  return <Tree ref={treeRef} />;
+  return (
+    <div>
+      <h2>set data with treeData prop</h2>
+      <Tree treeData={treeData} />
+
+      <h2>set with data api</h2>
+      <Tree ref={treeRef} />
+    </div>
+  );
 };
 
 export default Basic;

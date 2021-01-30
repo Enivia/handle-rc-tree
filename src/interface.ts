@@ -17,6 +17,7 @@ export type NodeCallback<DataType extends object = any> = (
 export interface TreeProps extends Omit<RcTreeProps, 'prefixCls' | 'treeData'> {
   prefixCls?: string;
   dataKeyMap?: DataKeyMap;
+  treeData?: object[];
 }
 
 export interface TreeInstance<DataType extends object = any> {

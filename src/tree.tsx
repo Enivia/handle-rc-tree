@@ -5,6 +5,7 @@ import React, {
   useImperativeHandle,
   useMemo,
   useState,
+  useEffect,
 } from 'react';
 import produce from 'immer';
 import RcTree from 'rc-tree';
@@ -18,12 +19,12 @@ const DEFAULT_KEY_MAP = { key: 'key', title: 'title', children: 'children' };
 const DEFAULT_ROOT: Node = { key: 'ROOT_KEY', data: {} };
 
 const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstance>) => {
-  const { dataKeyMap: keymap, ...rest } = props;
+  const { dataKeyMap: keymap, treeData, ...rest } = props;
   const [root, setRoot] = useState<Node>(DEFAULT_ROOT);
 
   const dataKeyMap = useMemo(() => {
     return { ...DEFAULT_KEY_MAP, ...keymap };
-  }, [keymap]);
+  }, []);
 
   const $update = useCallback((callback: (draft: Node) => void) => {
     setRoot(
@@ -37,16 +38,22 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
     );
   }, []);
 
-  const findNode = useCallback((root: Node, callback: NodeCallback) => {
-    if (!callback) {
-      throw Error('callback is empty');
-    }
-    const node = Utils.find(root, callback);
-    if (!node) {
-      throw Error('node is not found');
-    }
-    return node;
-  }, []);
+  const findNode = useCallback(
+    (root: Node, callback: NodeCallback, returnParent?: boolean) => {
+      if (!callback) {
+        throw Error('callback is empty');
+      }
+      const node = Utils.find(
+        root,
+        returnParent ? n => (n.children || []).some(callback) : callback
+      );
+      if (!node) {
+        throw Error('node is not found');
+      }
+      return node;
+    },
+    []
+  );
 
   const data = useCallback(
     (data: any[]) => {
@@ -57,6 +64,10 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
     },
     [dataKeyMap]
   );
+
+  useEffect(() => {
+    if (treeData) data(treeData);
+  }, [treeData]);
 
   const insert = useCallback(
     (node: any, callback: NodeCallback) => {
@@ -72,7 +83,7 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
 
   const remove = useCallback((callback: NodeCallback) => {
     $update(draft => {
-      const parent = findNode(draft, parent => (parent.children || []).some(callback));
+      const parent = findNode(draft, callback, true);
       const child = findNode(draft, callback);
       Utils.removeChild(parent, child);
     });
@@ -93,9 +104,7 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
     (nodeCallback: NodeCallback, parentCallback: NodeCallback) => {
       $update(draft => {
         const child = findNode(draft, nodeCallback);
-        const oldParent = findNode(draft, parent =>
-          (parent.children || []).some(nodeCallback)
-        );
+        const oldParent = findNode(draft, nodeCallback, true);
         const newParent = findNode(draft, parentCallback);
         if (oldParent === newParent) {
           throw Error('move faild: same parent');

@@ -29,7 +29,7 @@ jobs:
         id: check
         uses: EndBug/version-check@v1
 
-      - name: Login version check result
+      - name: Log version check result
         if: steps.check.outputs.changed == 'true'
         run: 'echo "Version change found in commit ${{ steps.check.outputs.commit }}! New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
 

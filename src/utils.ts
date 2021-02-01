@@ -1,20 +1,47 @@
+import { DataNode } from 'rc-tree/lib/interface';
 import { Node, DataKeyMap } from './interface';
 
-const Utils = {
-  from(data: any[], dataKeyMap: DataKeyMap): Node[] {
-    return (data || []).map(item => Utils.format(item, dataKeyMap));
+const nodePropKeys: Array<keyof DataNode> = [
+  'key',
+  'title',
+  'isLeaf',
+  'icon',
+  'checkable',
+  'disabled',
+  'selectable',
+  'disableCheckbox',
+  'switcherIcon',
+  'className',
+  'style',
+];
+
+export interface UtilsInterface {
+  dataKeyMap: DataKeyMap;
+  from(data: object[]): Node[];
+  format(item: any): Node;
+  forEach(root: Node, callback: (node: Node) => void): void;
+  find(root: Node, callback: (node: Node) => boolean): Node | undefined;
+  addChild(parent: Node, child: Node): void;
+  removeChild(parent: Node, child: Node): void;
+  updateNode(node: Node, newNode: Node): void;
+  updateChildren(parent: Node, children: Node[]): void;
+}
+
+const Utils: UtilsInterface = {
+  dataKeyMap: {},
+  from(data) {
+    return (data || []).map(item => this.format(item));
   },
-  format(item: any, dataKeyMap: DataKeyMap): Node {
-    const node: Node = {
-      key: item[dataKeyMap.key || 'key'] + '',
-      title: item[dataKeyMap.title || 'title'],
-      isLeaf: item['isLeaf'],
-      data: item,
-    };
-    node.children = Utils.from(item[dataKeyMap.children || 'children'], dataKeyMap);
+  format(item) {
+    const node = nodePropKeys.reduce((res, key) => {
+      Object.assign(res, { [key]: item[this.dataKeyMap[key] || key] });
+      return res;
+    }, {} as Node);
+    node.data = item;
+    node.children = this.from(item[this.dataKeyMap.children || 'children']);
     return node;
   },
-  forEach(root: Node, callback: (node: Node) => void) {
+  forEach(root, callback) {
     if (!root) return;
     let open = [root];
     let node: Node;
@@ -25,7 +52,7 @@ const Utils = {
       }
     }
   },
-  find(root: Node, callback: (node: Node) => boolean) {
+  find(root, callback) {
     if (!root) return;
     let open = [root];
     let node: Node;
@@ -39,19 +66,22 @@ const Utils = {
     }
     return;
   },
-  addChild(parent: Node, child: Node) {
+  addChild(parent, child) {
     if (!parent.children) {
       parent.children = [];
     }
     parent.children.push(child);
   },
-  removeChild(parent: Node, child: Node) {
+  removeChild(parent, child) {
     parent.children = parent.children?.filter(item => item !== child);
   },
-  updateNode(node: Node, newNode: Node) {
+  updateNode(node, newNode) {
     for (let prop in newNode) {
       node[prop as keyof Node] = newNode[prop as keyof Node];
     }
+  },
+  updateChildren(parent, children) {
+    parent.children = children;
   },
 };
 

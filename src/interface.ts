@@ -1,7 +1,7 @@
 import { TreeProps as RcTreeProps } from 'rc-tree';
-import { DataNode } from 'rc-tree/lib/interface';
+import { DataNode, EventDataNode } from 'rc-tree/lib/interface';
 
-export type NodeDataKey = 'key' | 'title' | 'children';
+export type NodeDataKey = keyof DataNode;
 
 export type DataKeyMap = { [key in NodeDataKey]?: string };
 
@@ -14,11 +14,18 @@ export type NodeCallback<DataType extends object = any> = (
   n: Node<DataType>
 ) => boolean;
 
-export interface TreeProps extends Omit<RcTreeProps, 'prefixCls' | 'treeData'> {
-  prefixCls?: string;
+export interface DefaultTreeProps extends Omit<RcTreeProps, 'prefixCls' | 'loadData'> {
   dataKeyMap?: DataKeyMap;
+  prefixCls?: string;
+  onLoadData?: (node: EventDataNode) => Promise<object[]>;
+}
+
+export interface MappedKeysTreeProps extends Omit<DefaultTreeProps, 'treeData'> {
+  dataKeyMap: DataKeyMap;
   treeData?: object[];
 }
+
+export type TreeProps = DefaultTreeProps | MappedKeysTreeProps;
 
 export interface TreeInstance<DataType extends object = any> {
   /**

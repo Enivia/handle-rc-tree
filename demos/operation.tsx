@@ -65,9 +65,15 @@ const Operation = () => {
     setParent('');
   };
 
+  const insertToRoot = () => {
+    const data = getNodeData();
+    treeRef.current.insert(data, n => n.key === Tree.ROOT);
+  };
+
   return (
     <div>
       <button onClick={setData}>reset tree data</button>
+      <button onClick={insertToRoot}>insert at first floor</button>
       <div>
         <input
           placeholder="node id"

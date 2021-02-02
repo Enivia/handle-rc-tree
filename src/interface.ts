@@ -28,11 +28,13 @@ export interface MappedKeysTreeProps extends Omit<DefaultTreeProps, 'treeData'> 
 export type TreeProps = DefaultTreeProps | MappedKeysTreeProps;
 
 export interface TreeInstance<DataType extends object = any> {
+  /** tree data */
+  data: DataType[] | undefined;
   /**
    * set tree data
    * @param data
    */
-  data(data: DataType[]): void;
+  setData(data: DataType[]): void;
   /**
    * insert node
    * @param node

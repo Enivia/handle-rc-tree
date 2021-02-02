@@ -50,7 +50,7 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
     []
   );
 
-  const data = useCallback((data: any[]) => {
+  const setData = useCallback((data: any[]) => {
     $update(node => {
       const children = Utils.from(data);
       node.children = children;
@@ -59,7 +59,7 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
 
   useEffect(() => {
     Utils.dataKeyMap = dataKeyMap || {};
-    if (treeData) data(treeData);
+    if (treeData) setData(treeData);
   }, [treeData, dataKeyMap]);
 
   const insert = useCallback((node: any, callback: NodeCallback) => {
@@ -122,7 +122,8 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
   );
 
   useImperativeHandle(ref, () => ({
-    data,
+    data: root.children,
+    setData,
     insert,
     remove,
     update,

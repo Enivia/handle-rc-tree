@@ -19,7 +19,7 @@ const Basic = () => {
   const treeRef = Tree.useTree();
 
   useEffect(() => {
-    treeRef.current.data(treeData);
+    treeRef.current.setData(treeData);
   }, []);
 
   return (

@@ -8,16 +8,14 @@ import AsyncData from '../demos/async-data';
 const meta: Meta = {
   title: 'Tree',
   component: Tree,
-  argTypes: {
-    children: {
-      control: {
-        type: 'text',
-      },
-    },
-  },
-  parameters: {
-    controls: { expanded: true },
-  },
+  // parameters: {
+  //   controls: { expanded: true },
+  //   docs: {
+  //     source: {
+  //       code: 'Some custom string here',
+  //     },
+  //   },
+  // },
 };
 
 export default meta;

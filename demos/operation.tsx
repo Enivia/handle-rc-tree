@@ -28,7 +28,7 @@ const Operation = () => {
   const [parent, setParent] = useState<string>();
 
   const setData = () => {
-    treeRef.current.data(treeData);
+    treeRef.current.setData(treeData);
   };
 
   const getNodeData = () => {

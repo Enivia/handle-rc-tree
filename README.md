@@ -25,10 +25,17 @@ const App = () => {
 
 ## API
 
-| name   | description   | type                                           |
-| ------ | ------------- | ---------------------------------------------- |
-| data   | set tree data | `function(data): void`                         |
-| insert | insert node   | `function(node, callback): void`               |
-| remove | remove node   | `function(callback): void`                     |
-| update | update node   | `function(node, callback): void`               |
-| move   | move node     | `function(nodeCallback, parentCallback): void` |
+### rc-tree
+
+[rc-tree api](https://github.com/react-component/tree/#api)
+
+### tree ref
+
+| name    | description   | type                                           |
+| ------- | ------------- | ---------------------------------------------- |
+| data    | tree data     | `DataType[]`                                   |
+| setData | set tree data | `function(data): void`                         |
+| insert  | insert node   | `function(node, callback): void`               |
+| remove  | remove node   | `function(callback): void`                     |
+| update  | update node   | `function(node, callback): void`               |
+| move    | move node     | `function(nodeCallback, parentCallback): void` |

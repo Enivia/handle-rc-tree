@@ -122,7 +122,7 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
   );
 
   useImperativeHandle(ref, () => ({
-    data: root.children,
+    data: root.children || [],
     setData,
     insert,
     remove,

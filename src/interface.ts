@@ -29,7 +29,7 @@ export type TreeProps = DefaultTreeProps | MappedKeysTreeProps;
 
 export interface TreeInstance<DataType extends object = any> {
   /** tree data */
-  data: DataType[] | undefined;
+  data: DataType[];
   /**
    * set tree data
    * @param data

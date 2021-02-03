@@ -27,7 +27,7 @@ const Basic = () => {
       <h2>set data with treeData prop</h2>
       <Tree treeData={treeData} />
 
-      <h2>set with data api</h2>
+      <h2>set data with api</h2>
       <Tree ref={treeRef} />
     </div>
   );

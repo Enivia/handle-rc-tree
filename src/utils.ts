@@ -20,7 +20,7 @@ export interface UtilsInterface {
   from(data: object[]): Node[];
   format(item: any): Node;
   forEach(root: Node, callback: (node: Node) => void): void;
-  find(root: Node, callback: (node: Node) => boolean): Node | undefined;
+  find(root: Node, callback: (node: Node) => boolean): Node | void;
   addChild(parent: Node, child: Node): void;
   removeChild(parent: Node, child: Node): void;
   updateNode(node: Node, newNode: Node): void;

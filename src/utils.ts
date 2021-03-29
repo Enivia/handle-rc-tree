@@ -16,9 +16,8 @@ const nodePropKeys: Array<keyof DataNode> = [
 ];
 
 export interface UtilsInterface {
-  dataKeyMap: DataKeyMap;
-  from(data: object[]): Node[];
-  format(item: any): Node;
+  from(data: object[], keymap?: DataKeyMap): Node[];
+  format(item: any, keymap?: DataKeyMap): Node;
   forEach(root: Node, callback: (node: Node) => void): void;
   find(root: Node, callback: (node: Node) => boolean): Node | void;
   addChild(parent: Node, child: Node): void;
@@ -28,17 +27,21 @@ export interface UtilsInterface {
 }
 
 const Utils: UtilsInterface = {
-  dataKeyMap: {},
-  from(data) {
-    return (data || []).map(item => this.format(item));
+  from(data, keymap = {}) {
+    return (data || []).map(item => this.format(item, keymap));
   },
-  format(item) {
-    const node = nodePropKeys.reduce((res, key) => {
-      Object.assign(res, { [key]: item[this.dataKeyMap[key] || key] });
-      return res;
-    }, {} as Node);
-    node.data = item;
-    node.children = this.from(item[this.dataKeyMap.children || 'children']);
+  format(item, keymap = {}) {
+    const node = { data: item } as Node;
+    nodePropKeys.forEach(key => {
+      const value = item[keymap[key] || key];
+      if (value !== undefined && value !== null) {
+        (node[key] as any) = value;
+      }
+    });
+    const children = item[keymap.children || 'children'];
+    if (children && children.length) {
+      node.children = this.from(children, keymap);
+    }
     return node;
   },
   forEach(root, callback) {

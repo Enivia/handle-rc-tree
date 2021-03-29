@@ -58,43 +58,45 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
     []
   );
 
-  const $move = useCallback(
-    (root: Node, child: Node, parent: Node) => {
-      if (child === parent) {
-        console.warn('move faild: cannot move node to itself');
-        return;
-      }
-      const oldParent = $find(root, n => (n.children || []).some(item => item === child));
-      if (oldParent === parent) {
-        console.warn('move faild: same parent');
-        return;
-      }
-      Utils.removeChild(oldParent, child);
-      Utils.addChild(parent, child);
+  const $move = useCallback((root: Node, child: Node, parent: Node) => {
+    if (child === parent) {
+      console.warn('move faild: cannot move node to itself');
+      return;
+    }
+    const oldParent = $find(root, item => item === child, true);
+    if (oldParent === parent) {
+      console.warn('move faild: same parent');
+      return;
+    }
+    Utils.removeChild(oldParent, child);
+    Utils.addChild(parent, child);
+  }, []);
+
+  const setData = useCallback(
+    (data: any[]) => {
+      $update(node => {
+        const children = Utils.from(data, dataKeyMap);
+        node.children = children;
+      });
     },
-    [$find]
+    [dataKeyMap]
   );
 
-  const setData = useCallback((data: any[]) => {
-    $update(node => {
-      const children = Utils.from(data);
-      node.children = children;
-    });
-  }, []);
-
   useEffect(() => {
-    Utils.dataKeyMap = dataKeyMap || {};
     if (treeData) setData(treeData);
-  }, [treeData, dataKeyMap]);
-
-  const insert = useCallback((node: any, callback: NodeCallback) => {
-    $update(draft => {
-      if (!node) return;
-      const parent = $find(draft, callback);
-      const child = Utils.format(node);
-      Utils.addChild(parent, child);
-    });
   }, []);
+
+  const insert = useCallback(
+    (node: any, callback: NodeCallback) => {
+      $update(draft => {
+        if (!node) return;
+        const parent = $find(draft, callback);
+        const child = Utils.format(node, dataKeyMap);
+        Utils.addChild(parent, child);
+      });
+    },
+    [dataKeyMap]
+  );
 
   const remove = useCallback((callback: NodeCallback) => {
     $update(draft => {
@@ -108,7 +110,7 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
     (data: any, callback: NodeCallback, parentCondition?: NodeCondition) => {
       $update(draft => {
         const node = $find(draft, callback);
-        const nNode = Utils.format(data);
+        const nNode = Utils.format(data, dataKeyMap);
         Utils.updateNode(node, nNode);
 
         if (parentCondition) {
@@ -117,7 +119,7 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
         }
       });
     },
-    []
+    [dataKeyMap]
   );
 
   const move = useCallback((nodeCallback: NodeCallback, parentCallback: NodeCallback) => {
@@ -128,11 +130,22 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
     });
   }, []);
 
+  const updateChildren = useCallback(
+    (data: any[], condition: NodeCondition) => {
+      $update(draft => {
+        const children = Utils.from(data, dataKeyMap);
+        const parent = $find(draft, condition);
+        parent.children = children;
+      });
+    },
+    [dataKeyMap]
+  );
+
   const handleLoadData = useCallback(
     async (node: EventDataNode) => {
       if (node.children?.length || !onLoadData) return;
       const data = await onLoadData(node);
-      const children = Utils.from(data);
+      const children = Utils.from(data, dataKeyMap);
       if (children.length === 0) return;
 
       $update(draft => {
@@ -140,7 +153,7 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
         Utils.updateChildren(parent, children);
       });
     },
-    [onLoadData]
+    [dataKeyMap, onLoadData]
   );
 
   useImperativeHandle(ref, () => ({
@@ -150,6 +163,7 @@ const InternalTree = forwardRef((props: TreeProps, ref: ForwardedRef<TreeInstanc
     remove,
     update,
     move,
+    updateChildren,
   }));
 
   return <RcTree {...rest} treeData={root?.children} loadData={handleLoadData} />;

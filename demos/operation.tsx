@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Tree from '../src';
 
 type CustomData = { id: string; name: string; children?: CustomData[] };

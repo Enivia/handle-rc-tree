@@ -67,4 +67,10 @@ export interface TreeInstance<DataType extends object = any> {
     nodeCallback: NodeCallback<DataType>,
     parentCondition: NodeCondition<DataType>
   ): void;
+  /**
+   * update children
+   * @param data
+   * @param nodeCondition condition to find parent node
+   */
+  updateChildren(data: DataType[], nodeCondition: NodeCondition<DataType>): void;
 }
